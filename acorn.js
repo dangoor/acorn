@@ -937,6 +937,7 @@
   // Continue to the next token.
 
   function next() {
+    eval(true);
     lastStart = tokStart;
     lastEnd = tokEnd;
     lastEndLoc = tokEndLoc;
