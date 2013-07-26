@@ -40,6 +40,7 @@
   var options, input, inputLen, sourceFile;
 
   exports.parse = function(inpt, opts) {
+    eval(true);
     input = String(inpt); inputLen = input.length;
     setOptions(opts);
     initTokenState();
@@ -100,6 +101,7 @@
   };
 
   function setOptions(opts) {
+    eval(true);
     options = opts || {};
     for (var opt in defaultOptions) if (!Object.prototype.hasOwnProperty.call(options, opt))
       options[opt] = defaultOptions[opt];
@@ -113,6 +115,7 @@
   // into.
 
   var getLineInfo = exports.getLineInfo = function(input, offset) {
+    eval(true);
     for (var line = 1, cur = 0;;) {
       lineBreak.lastIndex = cur;
       var match = lineBreak.exec(input);
@@ -132,12 +135,14 @@
   // reset the internal state, and invalidate existing tokenizers.
 
   exports.tokenize = function(inpt, opts) {
+    eval(true);
     input = String(inpt); inputLen = input.length;
     setOptions(opts);
     initTokenState();
 
     var t = {};
     function getToken(forceRegexp) {
+      eval(true);
       readToken(forceRegexp);
       t.start = tokStart; t.end = tokEnd;
       t.startLoc = tokStartLoc; t.endLoc = tokEndLoc;
@@ -145,6 +150,7 @@
       return t;
     }
     getToken.jumpTo = function(pos, reAllowed) {
+      eval(true);
       tokPos = pos;
       if (options.locations) {
         tokCurLine = 1;
@@ -221,6 +227,7 @@
   // message.
 
   function raise(pos, message) {
+    eval(true);
     var loc = getLineInfo(input, pos);
     message += " (" + loc.line + ":" + loc.column + ")";
     var err = new SyntaxError(message);
@@ -344,6 +351,7 @@
   // It starts by sorting the words by length.
 
   function makePredicate(words) {
+    eval(true);
     words = words.split(" ");
     var f = "", cats = [];
     out: for (var i = 0; i < words.length; ++i) {
@@ -355,6 +363,7 @@
       cats.push([words[i]]);
     }
     function compareTo(arr) {
+      eval(true);
       if (arr.length == 1) return f += "return str === " + JSON.stringify(arr[0]) + ";";
       f += "switch(str){";
       for (var i = 0; i < arr.length; ++i) f += "case " + JSON.stringify(arr[i]) + ":";
@@ -427,6 +436,7 @@
   // Test whether a given character code starts an identifier.
 
   var isIdentifierStart = exports.isIdentifierStart = function(code) {
+    eval(true);
     if (code < 65) return code === 36;
     if (code < 91) return true;
     if (code < 97) return code === 95;
@@ -437,6 +447,7 @@
   // Test whether a given character is part of an identifier.
 
   var isIdentifierChar = exports.isIdentifierChar = function(code) {
+    eval(true);
     if (code < 48) return code === 36;
     if (code < 58) return true;
     if (code < 65) return false;
@@ -452,6 +463,7 @@
   // `tokStartLoc` and `tokEndLoc` properties.
 
   function line_loc_t() {
+    eval(true);
     this.line = tokCurLine;
     this.column = tokPos - tokLineStart;
   }
@@ -459,6 +471,7 @@
   // Reset the token state. Used at the start of a parse.
 
   function initTokenState() {
+    eval(true);
     tokCurLine = 1;
     tokPos = tokLineStart = 0;
     tokRegexpAllowed = true;
@@ -470,6 +483,7 @@
   // the next one's `tokStart` will point at the right position.
 
   function finishToken(type, val) {
+    eval(true);
     tokEnd = tokPos;
     if (options.locations) tokEndLoc = new line_loc_t;
     tokType = type;
@@ -479,6 +493,7 @@
   }
 
   function skipBlockComment() {
+    eval(true);
     var startLoc = options.onComment && options.locations && new line_loc_t;
     var start = tokPos, end = input.indexOf("*/", tokPos += 2);
     if (end === -1) raise(tokPos - 2, "Unterminated comment");
@@ -497,6 +512,7 @@
   }
 
   function skipLineComment() {
+    eval(true);
     var start = tokPos;
     var startLoc = options.onComment && options.locations && new line_loc_t;
     var ch = input.charCodeAt(tokPos+=2);
@@ -513,6 +529,7 @@
   // whitespace and comments, and.
 
   function skipSpace() {
+    eval(true);
     while (tokPos < inputLen) {
       var ch = input.charCodeAt(tokPos);
       if (ch === 32) { // ' '
@@ -563,6 +580,7 @@
   // `tokRegexpAllowed` trick does not work. See `parseStatement`.
 
   function readToken_dot() {
+    eval(true);
     var next = input.charCodeAt(tokPos+1);
     if (next >= 48 && next <= 57) return readNumber(true);
     ++tokPos;
@@ -570,6 +588,7 @@
   }
 
   function readToken_slash() { // '/'
+    eval(true);
     var next = input.charCodeAt(tokPos+1);
     if (tokRegexpAllowed) {++tokPos; return readRegexp();}
     if (next === 61) return finishOp(_assign, 2);
@@ -577,12 +596,14 @@
   }
 
   function readToken_mult_modulo() { // '%*'
+    eval(true);
     var next = input.charCodeAt(tokPos+1);
     if (next === 61) return finishOp(_assign, 2);
     return finishOp(_bin10, 1);
   }
 
   function readToken_pipe_amp(code) { // '|&'
+    eval(true);
     var next = input.charCodeAt(tokPos+1);
     if (next === code) return finishOp(code === 124 ? _bin1 : _bin2, 2);
     if (next === 61) return finishOp(_assign, 2);
@@ -590,12 +611,14 @@
   }
 
   function readToken_caret() { // '^'
+    eval(true);
     var next = input.charCodeAt(tokPos+1);
     if (next === 61) return finishOp(_assign, 2);
     return finishOp(_bin4, 1);
   }
 
   function readToken_plus_min(code) { // '+-'
+    eval(true);
     var next = input.charCodeAt(tokPos+1);
     if (next === code) return finishOp(_incdec, 2);
     if (next === 61) return finishOp(_assign, 2);
@@ -603,6 +626,7 @@
   }
 
   function readToken_lt_gt(code) { // '<>'
+    eval(true);
     var next = input.charCodeAt(tokPos+1);
     var size = 1;
     if (next === code) {
@@ -616,12 +640,14 @@
   }
 
   function readToken_eq_excl(code) { // '=!'
+    eval(true);
     var next = input.charCodeAt(tokPos+1);
     if (next === 61) return finishOp(_bin6, input.charCodeAt(tokPos+2) === 61 ? 3 : 2);
     return finishOp(code === 61 ? _eq : _prefix, 1);
   }
 
   function getTokenFromCode(code) {
+    eval(true);
     switch(code) {
       // The interpretation of a dot depends on whether it is followed
       // by a digit.
@@ -687,6 +713,7 @@
   }
 
   function readToken(forceRegexp) {
+    eval(true);
     if (!forceRegexp) tokStart = tokPos;
     else tokPos = tokStart + 1;
     if (options.locations) tokStartLoc = new line_loc_t;
@@ -711,6 +738,7 @@
   }
 
   function finishOp(type, size) {
+    eval(true);
     var str = input.slice(tokPos, tokPos + size);
     tokPos += size;
     finishToken(type, str);
@@ -720,6 +748,7 @@
   // since a '/' inside a '[]' set does not end the expression.
 
   function readRegexp() {
+    eval(true);
     var content = "", escaped, inClass, start = tokPos;
     for (;;) {
       if (tokPos >= inputLen) raise(start, "Unterminated regular expression");
@@ -747,6 +776,7 @@
   // will return `null` unless the integer has exactly `len` digits.
 
   function readInt(radix, len) {
+    eval(true);
     var start = tokPos, total = 0;
     for (var i = 0, e = len == null ? Infinity : len; i < e; ++i) {
       var code = input.charCodeAt(tokPos), val;
@@ -764,6 +794,7 @@
   }
 
   function readHexNumber() {
+    eval(true);
     tokPos += 2; // 0x
     var val = readInt(16);
     if (val == null) raise(tokStart + 2, "Expected hexadecimal number");
@@ -774,6 +805,7 @@
   // Read an integer, octal integer, or floating-point number.
 
   function readNumber(startsWithDot) {
+    eval(true);
     var start = tokPos, isFloat = false, octal = input.charCodeAt(tokPos) === 48;
     if (!startsWithDot && readInt(10) === null) raise(start, "Invalid number");
     if (input.charCodeAt(tokPos) === 46) {
@@ -801,6 +833,7 @@
   // Read a string value, interpreting backslash-escapes.
 
   function readString(quote) {
+    eval(true);
     tokPos++;
     var out = "";
     for (;;) {
@@ -851,6 +884,7 @@
   // Used to read character escape sequences ('\x', '\u', '\U').
 
   function readHexChar(len) {
+    eval(true);
     var n = readInt(16, len);
     if (n === null) raise(tokStart, "Bad character escape sequence");
     return n;
@@ -869,6 +903,7 @@
   // containeds an escape, as a micro-optimization.
 
   function readWord1() {
+    eval(true);
     containsEsc = false;
     var word, first = true, start = tokPos;
     for (;;) {
@@ -900,6 +935,7 @@
   // words when necessary.
 
   function readWord() {
+    eval(true);
     var word = readWord1();
     var type = _name;
     if (!containsEsc) {
@@ -948,6 +984,7 @@
   // tests ("use strict"; 010; -- should fail).
 
   function setStrict(strct) {
+    eval(true);
     strict = strct;
     tokPos = lastEnd;
     while (tokPos < tokLineStart) {
@@ -961,18 +998,21 @@
   // Start an AST node, attaching a start offset.
 
   function node_t() {
+    eval(true);
     this.type = null;
     this.start = tokStart;
     this.end = null;
   }
 
   function node_loc_t() {
+    eval(true);
     this.start = tokStartLoc;
     this.end = null;
     if (sourceFile !== null) this.source = sourceFile;
   }
 
   function startNode() {
+    eval(true);
     var node = new node_t();
     if (options.locations)
       node.loc = new node_loc_t();
@@ -986,6 +1026,7 @@
   // only started after its left-hand side has already been parsed.
 
   function startNodeFrom(other) {
+    eval(true);
     var node = new node_t();
     node.start = other.start;
     if (options.locations) {
@@ -1001,6 +1042,7 @@
   // Finish an AST node, adding `type` and `end` properties.
 
   function finishNode(node, type) {
+    eval(true);
     node.type = type;
     node.end = lastEnd;
     if (options.locations)
@@ -1013,6 +1055,7 @@
   // Test whether a statement node is the string literal `"use strict"`.
 
   function isUseStrict(stmt) {
+    eval(true);
     return options.ecmaVersion >= 5 && stmt.type === "ExpressionStatement" &&
       stmt.expression.type === "Literal" && stmt.expression.value === "use strict";
   }
@@ -1021,6 +1064,7 @@
   // type, and if yes, consumes it as a side effect.
 
   function eat(type) {
+    eval(true);
     if (tokType === type) {
       next();
       return true;
@@ -1030,6 +1074,7 @@
   // Test whether a semicolon can be inserted at the current position.
 
   function canInsertSemicolon() {
+    eval(true);
     return !options.strictSemicolons &&
       (tokType === _eof || tokType === _braceR || newline.test(input.slice(lastEnd, tokStart)));
   }
@@ -1038,6 +1083,7 @@
   // pretend that there is a semicolon at this position.
 
   function semicolon() {
+    eval(true);
     if (!eat(_semi) && !canInsertSemicolon()) unexpected();
   }
 
@@ -1045,6 +1091,7 @@
   // raise an unexpected token error.
 
   function expect(type) {
+    eval(true);
     if (tokType === type) next();
     else unexpected();
   }
@@ -1052,6 +1099,7 @@
   // Raise an unexpected token error.
 
   function unexpected() {
+    eval(true);
     raise(tokStart, "Unexpected token");
   }
 
@@ -1059,6 +1107,7 @@
   // to.
 
   function checkLVal(expr) {
+    eval(true);
     if (expr.type !== "Identifier" && expr.type !== "MemberExpression")
       raise(expr.start, "Assigning to rvalue");
     if (strict && expr.type === "Identifier" && isStrictBadIdWord(expr.name))
@@ -1073,6 +1122,7 @@
   // to its body instead of creating a new node.
 
   function parseTopLevel(program) {
+    eval(true);
     lastStart = lastEnd = tokPos;
     if (options.locations) lastEndLoc = new line_loc_t;
     inFunction = strict = null;
@@ -1100,6 +1150,7 @@
   // does not help.
 
   function parseStatement() {
+    eval(true);
     if (tokType === _slash)
       readToken(true);
 
@@ -1316,6 +1367,7 @@
   // parentheses around their expression.
 
   function parseParenExpression() {
+    eval(true);
     expect(_parenL);
     var val = parseExpression();
     expect(_parenR);
@@ -1327,6 +1379,7 @@
   // function bodies).
 
   function parseBlock(allowStrict) {
+    eval(true);
     var node = startNode(), first = true, strict = false, oldStrict;
     node.body = [];
     expect(_braceL);
@@ -1348,6 +1401,7 @@
   // expression.
 
   function parseFor(node, init) {
+    eval(true);
     node.init = init;
     expect(_semi);
     node.test = tokType === _semi ? null : parseExpression();
@@ -1373,6 +1427,7 @@
   // Parse a list of variable declarations.
 
   function parseVar(node, noIn) {
+    eval(true);
     node.declarations = [];
     node.kind = "var";
     for (;;) {
@@ -1400,6 +1455,7 @@
   // or the `in` operator (in for loops initalization expressions).
 
   function parseExpression(noComma, noIn) {
+    eval(true);
     var expr = parseMaybeAssign(noIn);
     if (!noComma && tokType === _comma) {
       var node = startNodeFrom(expr);
@@ -1414,6 +1470,7 @@
   // operators like `+=`.
 
   function parseMaybeAssign(noIn) {
+    eval(true);
     var left = parseMaybeConditional(noIn);
     if (tokType.isAssign) {
       var node = startNodeFrom(left);
@@ -1430,6 +1487,7 @@
   // Parse a ternary conditional (`?:`) operator.
 
   function parseMaybeConditional(noIn) {
+    eval(true);
     var expr = parseExprOps(noIn);
     if (eat(_question)) {
       var node = startNodeFrom(expr);
@@ -1445,6 +1503,7 @@
   // Start the precedence parser.
 
   function parseExprOps(noIn) {
+    eval(true);
     return parseExprOp(parseMaybeUnary(), -1, noIn);
   }
 
@@ -1455,6 +1514,7 @@
   // operator that has a lower precedence than the set it is parsing.
 
   function parseExprOp(left, minPrec, noIn) {
+    eval(true);
     var prec = tokType.binop;
     if (prec != null && (!noIn || tokType !== _in)) {
       if (prec > minPrec) {
@@ -1473,6 +1533,7 @@
   // Parse unary operators, both prefix and postfix.
 
   function parseMaybeUnary() {
+    eval(true);
     if (tokType.prefix) {
       var node = startNode(), update = tokType.isUpdate;
       node.operator = tokVal;
@@ -1501,10 +1562,12 @@
   // Parse call, dot, and `[]`-subscript expressions.
 
   function parseExprSubscripts() {
+    eval(true);
     return parseSubscripts(parseExprAtom());
   }
 
   function parseSubscripts(base, noCalls) {
+    eval(true);
     if (eat(_dot)) {
       var node = startNodeFrom(base);
       node.object = base;
@@ -1532,6 +1595,7 @@
   // or `{}`.
 
   function parseExprAtom() {
+    eval(true);
     switch (tokType) {
     case _this:
       var node = startNode();
@@ -1595,6 +1659,7 @@
   // least, not without wrapping it in parentheses. Thus, it uses the
 
   function parseNew() {
+    eval(true);
     var node = startNode();
     next();
     node.callee = parseSubscripts(parseExprAtom(), true);
@@ -1606,6 +1671,7 @@
   // Parse an object literal.
 
   function parseObj() {
+    eval(true);
     var node = startNode(), first = true, sawGetSet = false;
     node.properties = [];
     next();
@@ -1649,6 +1715,7 @@
   }
 
   function parsePropertyName() {
+    eval(true);
     if (tokType === _num || tokType === _string) return parseExprAtom();
     return parseIdent(true);
   }
@@ -1657,6 +1724,7 @@
   // `isStatement` parameter).
 
   function parseFunction(node, isStatement) {
+    eval(true);
     if (tokType === _name) node.id = parseIdent();
     else if (isStatement) unexpected();
     else node.id = null;
@@ -1698,6 +1766,7 @@
   // for array literals).
 
   function parseExprList(close, allowTrailingComma, allowEmpty) {
+    eval(true);
     var elts = [], first = true;
     while (!eat(close)) {
       if (!first) {
@@ -1716,6 +1785,7 @@
   // identifiers.
 
   function parseIdent(liberal) {
+    eval(true);
     var node = startNode();
     node.name = tokType === _name ? tokVal : (liberal && !options.forbidReserved && tokType.keyword) || unexpected();
     next();
